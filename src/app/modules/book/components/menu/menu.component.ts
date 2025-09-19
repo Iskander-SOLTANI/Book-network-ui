@@ -20,8 +20,9 @@ ngOnInit(): void {
     });
     });
 }
-logout() {                                                                                                                                   
-throw new Error('Method not implemented.');
+logout() {   
+   sessionStorage.clear();   
+   window.location.reload();                                                                                                                            
 }
 
 }

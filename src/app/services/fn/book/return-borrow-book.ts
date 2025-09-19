@@ -8,17 +8,15 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { AuthenticationRequest } from '../../models/authentication-request';
-import { AuthenticationResponse } from '../../models/authentication-response';
 
-export interface Authenticate$Params {
-      body: AuthenticationRequest
+export interface ReturnBorrowBook$Params {
+  'book-id': number;
 }
 
-export function authenticate(http: HttpClient, rootUrl: string, params: Authenticate$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthenticationResponse>> {
-  const rb = new RequestBuilder(rootUrl, authenticate.PATH, 'post');
+export function returnBorrowBook(http: HttpClient, rootUrl: string, params: ReturnBorrowBook$Params, context?: HttpContext): Observable<StrictHttpResponse<number>> {
+  const rb = new RequestBuilder(rootUrl, returnBorrowBook.PATH, 'patch');
   if (params) {
-    rb.body(params.body, 'application/json');
+    rb.path('book-id', params['book-id'], {});
   }
 
   return http.request(
@@ -26,9 +24,9 @@ export function authenticate(http: HttpClient, rootUrl: string, params: Authenti
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<AuthenticationResponse>;
+      return (r as HttpResponse<any>).clone({ body: parseFloat(String((r as HttpResponse<any>).body)) }) as StrictHttpResponse<number>;
     })
   );
 }
 
-authenticate.PATH = '/auth/authenticate';
+returnBorrowBook.PATH = '/books/borrow/return/{book-id}';
